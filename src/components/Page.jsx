@@ -4,18 +4,33 @@ import PropTypes from 'prop-types';
 import './page.css';
 
 export class Page extends React.Component {
+  renderTemplate = () => {
+    const { photos, isFetching, error } = this.props;
+
+    if (isFetching) {
+      return <p>Загрузка...</p>;
+    } else if (error) {
+      return <p>Во время загрузки фото произошла ошибка</p>;
+    } else {
+      return (
+        <div>
+          <p>У тебя {photos.length} фото.</p> <div>{photos}</div>
+        </div>
+      );
+    }
+  };
+
   onBtnClick = e => {
     e.preventDefault();
     const year = +e.target.innerText;
-    this.props.setYear(year);
+    this.props.getPhotos(year);
   };
 
   render() {
-    const { year, photos } = this.props;
-
+    const { year } = this.props;
     return (
       <div className="page">
-        <div>
+        <div className="buttons">
           <button className="btn" onClick={this.onBtnClick}>
             2018
           </button>
@@ -33,7 +48,7 @@ export class Page extends React.Component {
           </button>
         </div>
         <h3>{year} год</h3>
-        <p>у тебя {photos.length}</p>
+        <div>{this.renderTemplate()}</div>
       </div>
     );
   }
@@ -42,5 +57,7 @@ export class Page extends React.Component {
 Page.propTypes = {
   year: PropTypes.number.isRequired,
   photos: PropTypes.array.isRequired,
-  setYear: PropTypes.func.isRequired,
+  getPhotos: PropTypes.func.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  error: PropTypes.string.isRequired,
 };
